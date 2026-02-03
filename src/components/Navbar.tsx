@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, BookOpen } from "lucide-react";
 
@@ -54,8 +55,12 @@ const Navbar = () => {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <Button variant="ghost">Log In</Button>
-            <Button variant="default">Start Free Trial</Button>
+            <Button variant="ghost" asChild>
+              <Link to="/login">Log In</Link>
+            </Button>
+            <Button variant="default" asChild>
+              <Link to="/login">Start Free Trial</Link>
+            </Button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -83,8 +88,12 @@ const Navbar = () => {
                 </a>
               ))}
               <div className="pt-4 space-y-3">
-                <Button variant="outline" className="w-full">Log In</Button>
-                <Button variant="default" className="w-full">Start Free Trial</Button>
+                <Button variant="outline" className="w-full" asChild>
+                  <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>Log In</Link>
+                </Button>
+                <Button variant="default" className="w-full" asChild>
+                  <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>Start Free Trial</Link>
+                </Button>
               </div>
             </div>
           </div>
