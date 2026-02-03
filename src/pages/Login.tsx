@@ -84,7 +84,7 @@ const Login = () => {
     });
     
     setIsLoading(false);
-    navigate("/");
+    navigate("/get-started");
   };
 
   return (
