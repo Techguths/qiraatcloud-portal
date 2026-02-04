@@ -1,12 +1,23 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, ArrowRight, Check, Building2, Palette, Settings, Upload } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Building2, User, Palette, CreditCard, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import AcademyInfoStep from "./steps/AcademyInfoStep";
+import OwnerInfoStep from "./steps/OwnerInfoStep";
+import BrandingStep from "./steps/BrandingStep";
+import SubscriptionStep from "./steps/SubscriptionStep";
+import SettingsStep from "./steps/SettingsStep";
 
-type Step = 1 | 2 | 3;
+type Step = 1 | 2 | 3 | 4 | 5;
+
+interface StudentPlan {
+  id: string;
+  name: string;
+  price: string;
+  duration: string;
+  features: string[];
+}
 
 const CreateAcademy = () => {
   const navigate = useNavigate();
@@ -14,50 +25,127 @@ const CreateAcademy = () => {
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Step 1: Basic Info
+  // Step 1: Academy Info
   const [academyName, setAcademyName] = useState("");
   const [academyDescription, setAcademyDescription] = useState("");
   const [academyLocation, setAcademyLocation] = useState("");
   const [academyEmail, setAcademyEmail] = useState("");
   const [academyPhone, setAcademyPhone] = useState("");
-
-  // Step 2: Branding
-  const [selectedColor, setSelectedColor] = useState("emerald");
+  const [academyWebsite, setAcademyWebsite] = useState("");
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
 
-  // Step 3: Settings
+  // Step 2: Owner Info
+  const [ownerName, setOwnerName] = useState("");
+  const [ownerTitle, setOwnerTitle] = useState("");
+  const [ownerBio, setOwnerBio] = useState("");
+  const [ownerEmail, setOwnerEmail] = useState("");
+  const [ownerPhone, setOwnerPhone] = useState("");
+  const [certificationNumber, setCertificationNumber] = useState("");
+  const [issuingAuthority, setIssuingAuthority] = useState("");
+  const [ownerPhotoPreview, setOwnerPhotoPreview] = useState<string | null>(null);
+  const [certificatePreview, setCertificatePreview] = useState<string | null>(null);
+  const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
+
+  // Step 3: Branding
+  const [primaryColor, setPrimaryColor] = useState("emerald");
+  const [secondaryColor, setSecondaryColor] = useState("cream");
+  const [accentColor, setAccentColor] = useState("gold");
+  const [fontStyle, setFontStyle] = useState("classic");
+
+  // Step 4: Subscription
+  const [platformPlan, setPlatformPlan] = useState("starter");
+  const [studentPlans, setStudentPlans] = useState<StudentPlan[]>([
+    {
+      id: "default-basic",
+      name: "Basic",
+      price: "49",
+      duration: "month",
+      features: ["Weekly group sessions", "Progress tracking", "Basic support"],
+    },
+    {
+      id: "default-premium",
+      name: "Premium",
+      price: "99",
+      duration: "month",
+      features: ["1-on-1 sessions twice weekly", "Priority scheduling", "Detailed progress reports", "Certificate upon completion"],
+    },
+  ]);
+
+  // Step 5: Settings
   const [maxStudents, setMaxStudents] = useState("100");
   const [enableEnrollment, setEnableEnrollment] = useState(true);
+  const [enableNotifications, setEnableNotifications] = useState(true);
+  const [requireApproval, setRequireApproval] = useState(true);
+  const [allowPublicProfile, setAllowPublicProfile] = useState(true);
+  const [timezone, setTimezone] = useState("UTC");
 
   const steps = [
-    { number: 1, title: "Academy Info", icon: Building2 },
-    { number: 2, title: "Branding", icon: Palette },
-    { number: 3, title: "Settings", icon: Settings },
+    { number: 1, title: "Academy", icon: Building2 },
+    { number: 2, title: "Owner", icon: User },
+    { number: 3, title: "Branding", icon: Palette },
+    { number: 4, title: "Plans", icon: CreditCard },
+    { number: 5, title: "Settings", icon: Settings },
   ];
 
-  const colors = [
-    { name: "emerald", class: "bg-primary" },
-    { name: "gold", class: "bg-accent" },
-    { name: "blue", class: "bg-blue-600" },
-    { name: "purple", class: "bg-purple-600" },
-    { name: "rose", class: "bg-rose-600" },
-  ];
+  const handleFileUpload = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setPreview: (value: string | null) => void
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const validateStep = (step: Step): boolean => {
+    switch (step) {
+      case 1:
+        if (!academyName.trim()) {
+          toast({ title: "Academy name is required", variant: "destructive" });
+          return false;
+        }
+        if (!academyEmail.trim()) {
+          toast({ title: "Contact email is required", variant: "destructive" });
+          return false;
+        }
+        return true;
+      case 2:
+        if (!ownerName.trim()) {
+          toast({ title: "Owner name is required", variant: "destructive" });
+          return false;
+        }
+        if (!ownerEmail.trim()) {
+          toast({ title: "Owner email is required", variant: "destructive" });
+          return false;
+        }
+        return true;
+      case 3:
+      case 4:
+      case 5:
+        return true;
+      default:
+        return true;
+    }
+  };
 
   const handleNext = () => {
-    if (currentStep === 1) {
-      if (!academyName.trim()) {
-        toast({ title: "Academy name is required", variant: "destructive" });
-        return;
-      }
-    }
-    if (currentStep < 3) {
+    if (!validateStep(currentStep)) return;
+    
+    if (currentStep < 5) {
       setCurrentStep((prev) => (prev + 1) as Step);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep((prev) => (prev - 1) as Step);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -65,38 +153,27 @@ const CreateAcademy = () => {
     setIsLoading(true);
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    
+
     toast({
       title: "Academy created successfully!",
-      description: `Welcome to ${academyName}. Your academy is ready to go.`,
+      description: `Welcome to ${academyName}. Your academy is ready to accept students.`,
     });
-    
+
     setIsLoading(false);
     navigate("/");
-  };
-
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setLogoPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="px-4 py-6 sm:px-6 lg:px-8 border-b border-border">
-        <div className="max-w-3xl mx-auto flex items-center justify-between">
+      <header className="px-4 py-6 sm:px-6 lg:px-8 border-b border-border bg-background sticky top-0 z-10">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
           <Link
             to="/get-started"
             className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back
+            <span className="hidden sm:inline">Back</span>
           </Link>
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-hero rounded-lg flex items-center justify-center">
@@ -106,18 +183,21 @@ const CreateAcademy = () => {
               Create Academy
             </span>
           </div>
+          <div className="text-sm text-muted-foreground">
+            Step {currentStep} of 5
+          </div>
         </div>
       </header>
 
       {/* Progress Steps */}
-      <div className="px-4 py-8 sm:px-6 lg:px-8 bg-secondary/30">
-        <div className="max-w-3xl mx-auto">
+      <div className="px-4 py-6 sm:px-6 lg:px-8 bg-secondary/30 border-b border-border">
+        <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between">
             {steps.map((step, index) => (
-              <div key={step.number} className="flex items-center">
-                <div className="flex flex-col items-center">
+              <div key={step.number} className="flex items-center flex-1">
+                <div className="flex flex-col items-center flex-shrink-0">
                   <div
-                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+                    className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all ${
                       currentStep >= step.number
                         ? "bg-primary text-primary-foreground"
                         : "bg-muted text-muted-foreground"
@@ -126,11 +206,11 @@ const CreateAcademy = () => {
                     {currentStep > step.number ? (
                       <Check className="w-5 h-5" />
                     ) : (
-                      <step.icon className="w-5 h-5" />
+                      <step.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                     )}
                   </div>
                   <span
-                    className={`text-sm mt-2 font-medium ${
+                    className={`text-xs sm:text-sm mt-2 font-medium text-center ${
                       currentStep >= step.number ? "text-foreground" : "text-muted-foreground"
                     }`}
                   >
@@ -139,7 +219,7 @@ const CreateAcademy = () => {
                 </div>
                 {index < steps.length - 1 && (
                   <div
-                    className={`hidden sm:block w-24 lg:w-32 h-1 mx-4 rounded-full ${
+                    className={`flex-1 h-1 mx-2 sm:mx-4 rounded-full ${
                       currentStep > step.number ? "bg-primary" : "bg-muted"
                     }`}
                   />
@@ -152,256 +232,98 @@ const CreateAcademy = () => {
 
       {/* Form Content */}
       <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8">
-        <div className="max-w-2xl mx-auto">
-          {/* Step 1: Basic Info */}
+        <div className="max-w-3xl mx-auto">
           {currentStep === 1 && (
-            <div className="space-y-6 animate-fade-up">
-              <div>
-                <h2 className="font-display text-2xl font-bold text-foreground mb-2">
-                  Tell us about your academy
-                </h2>
-                <p className="text-muted-foreground">
-                  This information will help students find and learn about your academy.
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Academy Name <span className="text-destructive">*</span>
-                  </label>
-                  <Input
-                    placeholder="e.g., Al-Noor Qur'an Academy"
-                    value={academyName}
-                    onChange={(e) => setAcademyName(e.target.value)}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Description
-                  </label>
-                  <Textarea
-                    placeholder="Tell students what makes your academy special..."
-                    value={academyDescription}
-                    onChange={(e) => setAcademyDescription(e.target.value)}
-                    rows={4}
-                  />
-                </div>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Location
-                    </label>
-                    <Input
-                      placeholder="City, Country"
-                      value={academyLocation}
-                      onChange={(e) => setAcademyLocation(e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Phone Number
-                    </label>
-                    <Input
-                      placeholder="+1 234 567 8900"
-                      value={academyPhone}
-                      onChange={(e) => setAcademyPhone(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Contact Email
-                  </label>
-                  <Input
-                    type="email"
-                    placeholder="contact@academy.com"
-                    value={academyEmail}
-                    onChange={(e) => setAcademyEmail(e.target.value)}
-                  />
-                </div>
-              </div>
-            </div>
+            <AcademyInfoStep
+              academyName={academyName}
+              setAcademyName={setAcademyName}
+              academyDescription={academyDescription}
+              setAcademyDescription={setAcademyDescription}
+              academyLocation={academyLocation}
+              setAcademyLocation={setAcademyLocation}
+              academyEmail={academyEmail}
+              setAcademyEmail={setAcademyEmail}
+              academyPhone={academyPhone}
+              setAcademyPhone={setAcademyPhone}
+              academyWebsite={academyWebsite}
+              setAcademyWebsite={setAcademyWebsite}
+              logoPreview={logoPreview}
+              handleLogoUpload={(e) => handleFileUpload(e, setLogoPreview)}
+              coverPreview={coverPreview}
+              handleCoverUpload={(e) => handleFileUpload(e, setCoverPreview)}
+            />
           )}
 
-          {/* Step 2: Branding */}
           {currentStep === 2 && (
-            <div className="space-y-6 animate-fade-up">
-              <div>
-                <h2 className="font-display text-2xl font-bold text-foreground mb-2">
-                  Customize your academy's look
-                </h2>
-                <p className="text-muted-foreground">
-                  Add your logo and choose a theme color for your academy.
-                </p>
-              </div>
-
-              <div className="space-y-6">
-                {/* Logo Upload */}
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-3">
-                    Academy Logo
-                  </label>
-                  <div className="flex items-center gap-6">
-                    <div className="w-24 h-24 bg-muted rounded-2xl flex items-center justify-center overflow-hidden border-2 border-dashed border-border">
-                      {logoPreview ? (
-                        <img src={logoPreview} alt="Logo preview" className="w-full h-full object-cover" />
-                      ) : (
-                        <Upload className="w-8 h-8 text-muted-foreground" />
-                      )}
-                    </div>
-                    <div>
-                      <label className="cursor-pointer">
-                        <span className="inline-flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors text-sm font-medium">
-                          <Upload className="w-4 h-4" />
-                          Upload Logo
-                        </span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleLogoUpload}
-                          className="hidden"
-                        />
-                      </label>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        PNG, JPG up to 2MB
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Theme Color */}
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-3">
-                    Theme Color
-                  </label>
-                  <div className="flex gap-3">
-                    {colors.map((color) => (
-                      <button
-                        key={color.name}
-                        type="button"
-                        onClick={() => setSelectedColor(color.name)}
-                        className={`w-12 h-12 rounded-xl ${color.class} transition-all ${
-                          selectedColor === color.name
-                            ? "ring-4 ring-offset-2 ring-primary scale-110"
-                            : "hover:scale-105"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Preview */}
-                <div className="bg-card rounded-2xl p-6 border border-border">
-                  <p className="text-sm text-muted-foreground mb-4">Preview</p>
-                  <div className="flex items-center gap-4">
-                    <div className={`w-16 h-16 rounded-xl flex items-center justify-center ${
-                      selectedColor === "emerald" ? "bg-primary" :
-                      selectedColor === "gold" ? "bg-accent" :
-                      selectedColor === "blue" ? "bg-blue-600" :
-                      selectedColor === "purple" ? "bg-purple-600" : "bg-rose-600"
-                    }`}>
-                      {logoPreview ? (
-                        <img src={logoPreview} alt="Logo" className="w-full h-full object-cover rounded-xl" />
-                      ) : (
-                        <span className="text-2xl font-bold text-white">
-                          {academyName ? academyName.charAt(0).toUpperCase() : "A"}
-                        </span>
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="font-display text-lg font-semibold text-foreground">
-                        {academyName || "Your Academy Name"}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        {academyLocation || "Location"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <OwnerInfoStep
+              ownerName={ownerName}
+              setOwnerName={setOwnerName}
+              ownerTitle={ownerTitle}
+              setOwnerTitle={setOwnerTitle}
+              ownerBio={ownerBio}
+              setOwnerBio={setOwnerBio}
+              ownerEmail={ownerEmail}
+              setOwnerEmail={setOwnerEmail}
+              ownerPhone={ownerPhone}
+              setOwnerPhone={setOwnerPhone}
+              certificationNumber={certificationNumber}
+              setCertificationNumber={setCertificationNumber}
+              issuingAuthority={issuingAuthority}
+              setIssuingAuthority={setIssuingAuthority}
+              ownerPhotoPreview={ownerPhotoPreview}
+              handleOwnerPhotoUpload={(e) => handleFileUpload(e, setOwnerPhotoPreview)}
+              certificatePreview={certificatePreview}
+              handleCertificateUpload={(e) => handleFileUpload(e, setCertificatePreview)}
+              signaturePreview={signaturePreview}
+              handleSignatureUpload={(e) => handleFileUpload(e, setSignaturePreview)}
+            />
           )}
 
-          {/* Step 3: Settings */}
           {currentStep === 3 && (
-            <div className="space-y-6 animate-fade-up">
-              <div>
-                <h2 className="font-display text-2xl font-bold text-foreground mb-2">
-                  Configure your academy
-                </h2>
-                <p className="text-muted-foreground">
-                  Set up enrollment preferences and capacity limits.
-                </p>
-              </div>
+            <BrandingStep
+              primaryColor={primaryColor}
+              setPrimaryColor={setPrimaryColor}
+              secondaryColor={secondaryColor}
+              setSecondaryColor={setSecondaryColor}
+              accentColor={accentColor}
+              setAccentColor={setAccentColor}
+              fontStyle={fontStyle}
+              setFontStyle={setFontStyle}
+              logoPreview={logoPreview}
+              academyName={academyName}
+              academyLocation={academyLocation}
+            />
+          )}
 
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Maximum Students
-                  </label>
-                  <Input
-                    type="number"
-                    placeholder="100"
-                    value={maxStudents}
-                    onChange={(e) => setMaxStudents(e.target.value)}
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    You can change this later in settings
-                  </p>
-                </div>
+          {currentStep === 4 && (
+            <SubscriptionStep
+              platformPlan={platformPlan}
+              setPlatformPlan={setPlatformPlan}
+              studentPlans={studentPlans}
+              setStudentPlans={setStudentPlans}
+            />
+          )}
 
-                <div className="bg-card rounded-xl p-4 border border-border">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-foreground">Open Enrollment</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Allow students to browse and join your academy
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setEnableEnrollment(!enableEnrollment)}
-                      className={`w-12 h-7 rounded-full transition-colors relative ${
-                        enableEnrollment ? "bg-primary" : "bg-muted"
-                      }`}
-                    >
-                      <span
-                        className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform ${
-                          enableEnrollment ? "left-6" : "left-1"
-                        }`}
-                      />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Summary */}
-                <div className="bg-secondary/50 rounded-xl p-6">
-                  <h4 className="font-medium text-foreground mb-4">Summary</h4>
-                  <div className="space-y-3 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Academy Name</span>
-                      <span className="font-medium text-foreground">{academyName || "—"}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Location</span>
-                      <span className="font-medium text-foreground">{academyLocation || "—"}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Max Students</span>
-                      <span className="font-medium text-foreground">{maxStudents}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Open Enrollment</span>
-                      <span className="font-medium text-foreground">{enableEnrollment ? "Yes" : "No"}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          {currentStep === 5 && (
+            <SettingsStep
+              maxStudents={maxStudents}
+              setMaxStudents={setMaxStudents}
+              enableEnrollment={enableEnrollment}
+              setEnableEnrollment={setEnableEnrollment}
+              enableNotifications={enableNotifications}
+              setEnableNotifications={setEnableNotifications}
+              requireApproval={requireApproval}
+              setRequireApproval={setRequireApproval}
+              allowPublicProfile={allowPublicProfile}
+              setAllowPublicProfile={setAllowPublicProfile}
+              timezone={timezone}
+              setTimezone={setTimezone}
+              academyName={academyName}
+              academyLocation={academyLocation}
+              ownerName={ownerName}
+              platformPlan={platformPlan}
+              studentPlansCount={studentPlans.length}
+            />
           )}
 
           {/* Navigation Buttons */}
@@ -415,7 +337,7 @@ const CreateAcademy = () => {
               <div />
             )}
 
-            {currentStep < 3 ? (
+            {currentStep < 5 ? (
               <Button onClick={handleNext}>
                 Next
                 <ArrowRight className="w-4 h-4 ml-2" />
@@ -426,7 +348,7 @@ const CreateAcademy = () => {
                 disabled={isLoading}
                 className="bg-gradient-hero hover:opacity-90"
               >
-                {isLoading ? "Creating Academy..." : "Create Academy"}
+                {isLoading ? "Creating Academy..." : "Launch Academy"}
               </Button>
             )}
           </div>
