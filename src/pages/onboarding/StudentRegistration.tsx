@@ -1,237 +1,348 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ArrowLeft, Search, MapPin, Users, Star, GraduationCap } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, User, GraduationCap, CreditCard, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import StudentPersonalInfoStep from "./steps/StudentPersonalInfoStep";
+import StudentAcademySelectionStep, { type Academy } from "./steps/StudentAcademySelectionStep";
+import StudentPricingStep from "./steps/StudentPricingStep";
+import StudentAccountSetupStep from "./steps/StudentAccountSetupStep";
 
-interface Academy {
-  id: string;
-  name: string;
-  location: string;
-  students: number;
-  rating: number;
-  description: string;
-  color: string;
+type RegistrationPath = "with-academy" | "join-later" | null;
+
+interface PersonalInfo {
+  fullName: string;
+  email: string;
+  phone: string;
+  dateOfBirth: string;
+  gender: string;
+  country: string;
+  city: string;
+  bio: string;
+  profilePhoto: string | null;
 }
 
-const mockAcademies: Academy[] = [
-  {
-    id: "1",
-    name: "Al-Noor Qur'an Academy",
-    location: "London, UK",
-    students: 245,
-    rating: 4.9,
-    description: "Premier Qur'an education with certified instructors specializing in Tajweed and Hifz.",
-    color: "bg-primary",
-  },
-  {
-    id: "2",
-    name: "Bayyinah Institute",
-    location: "Dallas, USA",
-    students: 1200,
-    rating: 4.8,
-    description: "Learn Arabic and understand the Qur'an with our comprehensive curriculum.",
-    color: "bg-accent",
-  },
-  {
-    id: "3",
-    name: "Madrasah Al-Hikmah",
-    location: "Dubai, UAE",
-    students: 430,
-    rating: 4.7,
-    description: "Traditional Islamic education blended with modern teaching methods.",
-    color: "bg-blue-600",
-  },
-  {
-    id: "4",
-    name: "Qur'an Academy Online",
-    location: "Online",
-    students: 3500,
-    rating: 4.6,
-    description: "Flexible online Qur'an classes with one-on-one sessions available 24/7.",
-    color: "bg-purple-600",
-  },
-  {
-    id: "5",
-    name: "Madinah Qur'an Institute",
-    location: "Cairo, Egypt",
-    students: 890,
-    rating: 4.9,
-    description: "Authentic Qur'anic studies with scholars trained in Madinah methodology.",
-    color: "bg-rose-600",
-  },
-];
+interface AccountSetup {
+  displayName: string;
+  timezone: string;
+  language: string;
+  currentLevel: string;
+  learningGoal: string;
+  emailNotifications: boolean;
+  pushNotifications: boolean;
+  classReminders: boolean;
+  progressReports: boolean;
+}
 
 const StudentRegistration = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [registrationPath, setRegistrationPath] = useState<RegistrationPath>(null);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Form data
+  const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({
+    fullName: "",
+    email: "",
+    phone: "",
+    dateOfBirth: "",
+    gender: "",
+    country: "",
+    city: "",
+    bio: "",
+    profilePhoto: null,
+  });
+
   const [selectedAcademy, setSelectedAcademy] = useState<Academy | null>(null);
-  const [isJoining, setIsJoining] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
 
-  const filteredAcademies = mockAcademies.filter(
-    (academy) =>
-      academy.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      academy.location.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const [accountSetup, setAccountSetup] = useState<AccountSetup>({
+    displayName: "",
+    timezone: "",
+    language: "en",
+    currentLevel: "",
+    learningGoal: "",
+    emailNotifications: true,
+    pushNotifications: true,
+    classReminders: true,
+    progressReports: true,
+  });
 
-  const handleJoinAcademy = async () => {
-    if (!selectedAcademy) return;
-    
-    setIsJoining(true);
-    // Simulate API call
+  // Steps based on path
+  const getSteps = () => {
+    if (registrationPath === "with-academy") {
+      return [
+        { id: "personal", title: "Personal Info", icon: User },
+        { id: "academy", title: "Select Academy", icon: GraduationCap },
+        { id: "pricing", title: "Choose Plan", icon: CreditCard },
+        { id: "setup", title: "Account Setup", icon: Settings },
+      ];
+    }
+    return [
+      { id: "personal", title: "Personal Info", icon: User },
+      { id: "setup", title: "Account Setup", icon: Settings },
+    ];
+  };
+
+  const steps = getSteps();
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
     await new Promise((resolve) => setTimeout(resolve, 1500));
-    
+
     toast({
-      title: "Request sent!",
-      description: `Your enrollment request has been sent to ${selectedAcademy.name}.`,
+      title: "Welcome aboard! 🎉",
+      description: registrationPath === "with-academy"
+        ? `Your enrollment request has been sent to ${selectedAcademy?.name}.`
+        : "Your account has been set up. You can join an academy anytime from your dashboard.",
     });
-    
-    setIsJoining(false);
+
+    setIsSubmitting(false);
     navigate("/");
   };
+
+  const canProceed = () => {
+    if (registrationPath === null) return false;
+
+    const stepId = steps[currentStep]?.id;
+
+    if (stepId === "personal") {
+      return personalInfo.fullName.trim() !== "" && personalInfo.email.trim() !== "";
+    }
+    if (stepId === "academy") {
+      return selectedAcademy !== null;
+    }
+    if (stepId === "pricing") {
+      return selectedPlan !== null;
+    }
+    if (stepId === "setup") {
+      return true;
+    }
+    return true;
+  };
+
+  const handleNext = () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      handleSubmit();
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    } else {
+      setRegistrationPath(null);
+    }
+  };
+
+  // Path selection screen
+  if (registrationPath === null) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <header className="px-4 py-6 sm:px-6 lg:px-8 border-b border-border">
+          <div className="max-w-3xl mx-auto flex items-center justify-between">
+            <Link
+              to="/get-started"
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back
+            </Link>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-hero rounded-lg flex items-center justify-center">
+                <span className="text-primary-foreground font-display font-bold text-sm">Q</span>
+              </div>
+              <span className="font-display font-semibold text-foreground hidden sm:block">
+                Student Registration
+              </span>
+            </div>
+          </div>
+        </header>
+
+        <main className="flex-1 px-4 py-12 sm:px-6 lg:px-8">
+          <div className="max-w-2xl mx-auto text-center">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-3">
+              How would you like to get started?
+            </h1>
+            <p className="text-muted-foreground mb-10">
+              Choose your registration path based on your preference
+            </p>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              {/* Join Academy Now */}
+              <button
+                onClick={() => setRegistrationPath("with-academy")}
+                className="group p-6 rounded-2xl border border-border bg-card hover:border-primary hover:shadow-soft transition-all duration-200 text-left"
+              >
+                <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                  <GraduationCap className="w-7 h-7 text-primary" />
+                </div>
+                <h3 className="font-display text-lg font-semibold text-foreground mb-2">
+                  Join an Academy Now
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Browse academies, select a subscription plan, and start learning right away with structured guidance.
+                </p>
+                <div className="mt-4 flex items-center gap-2 text-sm text-primary font-medium">
+                  <span>Get started</span>
+                  <ArrowRight className="w-4 h-4" />
+                </div>
+              </button>
+
+              {/* Join Later */}
+              <button
+                onClick={() => setRegistrationPath("join-later")}
+                className="group p-6 rounded-2xl border border-border bg-card hover:border-primary hover:shadow-soft transition-all duration-200 text-left"
+              >
+                <div className="w-14 h-14 bg-accent/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
+                  <User className="w-7 h-7 text-accent" />
+                </div>
+                <h3 className="font-display text-lg font-semibold text-foreground mb-2">
+                  Set Up Profile First
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Complete your profile now and explore academies later from your dashboard at your own pace.
+                </p>
+                <div className="mt-4 flex items-center gap-2 text-sm text-accent font-medium">
+                  <span>Continue</span>
+                  <ArrowRight className="w-4 h-4" />
+                </div>
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Multi-step wizard
+  const currentStepData = steps[currentStep];
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="px-4 py-6 sm:px-6 lg:px-8 border-b border-border">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <Link
-            to="/get-started"
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <button
+            onClick={handleBack}
             className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back
-          </Link>
+          </button>
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-hero rounded-lg flex items-center justify-center">
               <span className="text-primary-foreground font-display font-bold text-sm">Q</span>
             </div>
-            <span className="font-display font-semibold text-foreground hidden sm:block">
-              Find an Academy
-            </span>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto">
-          {/* Title & Search */}
-          <div className="mb-8">
-            <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-2">
-              Find your academy
-            </h1>
-            <p className="text-muted-foreground mb-6">
-              Browse and join an academy to start your Qur'an learning journey
-            </p>
+      {/* Progress Steps */}
+      <div className="px-4 py-6 sm:px-6 lg:px-8 border-b border-border bg-muted/30">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-between">
+            {steps.map((step, index) => {
+              const Icon = step.icon;
+              const isCompleted = index < currentStep;
+              const isCurrent = index === currentStep;
 
-            {/* Search Bar */}
-            <div className="relative max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                placeholder="Search by name or location..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </div>
-
-          {/* Academies Grid */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredAcademies.map((academy) => (
-              <button
-                key={academy.id}
-                onClick={() => setSelectedAcademy(academy)}
-                className={`text-left p-5 rounded-2xl border transition-all duration-200 ${
-                  selectedAcademy?.id === academy.id
-                    ? "border-primary bg-primary/5 ring-2 ring-primary"
-                    : "border-border bg-card hover:border-primary/30 hover:shadow-soft"
-                }`}
-              >
-                <div className="flex items-start gap-4">
-                  <div className={`w-12 h-12 ${academy.color} rounded-xl flex items-center justify-center flex-shrink-0`}>
-                    <span className="text-lg font-bold text-white">
-                      {academy.name.charAt(0)}
-                    </span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-display font-semibold text-foreground truncate">
-                      {academy.name}
-                    </h3>
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
-                      <MapPin className="w-3.5 h-3.5" />
-                      <span>{academy.location}</span>
+              return (
+                <div key={step.id} className="flex items-center flex-1">
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
+                        isCompleted
+                          ? "bg-primary text-primary-foreground"
+                          : isCurrent
+                          ? "bg-primary/20 text-primary border-2 border-primary"
+                          : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {isCompleted ? <Check className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
                     </div>
-                  </div>
-                </div>
-
-                <p className="text-sm text-muted-foreground mt-3 line-clamp-2">
-                  {academy.description}
-                </p>
-
-                <div className="flex items-center gap-4 mt-4 text-sm">
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <Users className="w-4 h-4" />
-                    <span>{academy.students.toLocaleString()}</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-accent">
-                    <Star className="w-4 h-4 fill-current" />
-                    <span className="font-medium">{academy.rating}</span>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-
-          {filteredAcademies.length === 0 && (
-            <div className="text-center py-12">
-              <GraduationCap className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="font-display text-lg font-semibold text-foreground mb-2">
-                No academies found
-              </h3>
-              <p className="text-muted-foreground">
-                Try adjusting your search query or browse all academies
-              </p>
-            </div>
-          )}
-
-          {/* Selected Academy Action */}
-          {selectedAcademy && (
-            <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 sm:p-6">
-              <div className="max-w-5xl mx-auto flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className={`w-10 h-10 ${selectedAcademy.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
-                    <span className="text-sm font-bold text-white">
-                      {selectedAcademy.name.charAt(0)}
+                    <span
+                      className={`mt-2 text-xs font-medium hidden sm:block ${
+                        isCurrent ? "text-foreground" : "text-muted-foreground"
+                      }`}
+                    >
+                      {step.title}
                     </span>
                   </div>
-                  <div className="min-w-0">
-                    <p className="font-medium text-foreground truncate">
-                      {selectedAcademy.name}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {selectedAcademy.students.toLocaleString()} students
-                    </p>
-                  </div>
+                  {index < steps.length - 1 && (
+                    <div
+                      className={`flex-1 h-0.5 mx-2 ${
+                        index < currentStep ? "bg-primary" : "bg-border"
+                      }`}
+                    />
+                  )}
                 </div>
-                <Button
-                  onClick={handleJoinAcademy}
-                  disabled={isJoining}
-                  className="bg-gradient-hero hover:opacity-90 flex-shrink-0"
-                >
-                  {isJoining ? "Sending Request..." : "Request to Join"}
-                </Button>
-              </div>
-            </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8 overflow-y-auto">
+        <div className="max-w-2xl mx-auto">
+          {currentStepData.id === "personal" && (
+            <StudentPersonalInfoStep
+              data={personalInfo}
+              onChange={(data) => setPersonalInfo((prev) => ({ ...prev, ...data }))}
+            />
           )}
 
-          {/* Spacer for fixed bottom bar */}
-          {selectedAcademy && <div className="h-24" />}
+          {currentStepData.id === "academy" && (
+            <StudentAcademySelectionStep
+              selectedAcademy={selectedAcademy}
+              onSelect={setSelectedAcademy}
+            />
+          )}
+
+          {currentStepData.id === "pricing" && selectedAcademy && (
+            <StudentPricingStep
+              academy={selectedAcademy}
+              selectedPlan={selectedPlan}
+              onSelect={setSelectedPlan}
+            />
+          )}
+
+          {currentStepData.id === "setup" && (
+            <StudentAccountSetupStep
+              data={accountSetup}
+              onChange={(data) => setAccountSetup((prev) => ({ ...prev, ...data }))}
+              withAcademy={registrationPath === "with-academy"}
+            />
+          )}
         </div>
       </main>
+
+      {/* Footer Navigation */}
+      <footer className="px-4 py-4 sm:px-6 lg:px-8 border-t border-border bg-background">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <span className="text-sm text-muted-foreground">
+            Step {currentStep + 1} of {steps.length}
+          </span>
+          <Button
+            onClick={handleNext}
+            disabled={!canProceed() || isSubmitting}
+            className="bg-gradient-hero hover:opacity-90"
+          >
+            {isSubmitting
+              ? "Setting up..."
+              : currentStep === steps.length - 1
+              ? "Complete Setup"
+              : "Continue"}
+            {!isSubmitting && currentStep < steps.length - 1 && (
+              <ArrowRight className="w-4 h-4 ml-2" />
+            )}
+          </Button>
+        </div>
+      </footer>
     </div>
   );
 };
