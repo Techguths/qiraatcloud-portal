@@ -49,7 +49,12 @@ const Login = () => {
     });
     
     setIsLoading(false);
-    navigate("/");
+    // Redirect based on role - for demo, use email to determine role
+    if (loginEmail.toLowerCase().includes("student")) {
+      navigate("/dashboard/student");
+    } else {
+      navigate("/dashboard/academy");
+    }
   };
 
   const handleSignup = async (e: React.FormEvent) => {

@@ -11,6 +11,8 @@ import GetStarted from "./pages/GetStarted";
 import CreateAcademy from "./pages/onboarding/CreateAcademy";
 import StudentRegistration from "./pages/onboarding/StudentRegistration";
 import InviteCode from "./pages/onboarding/InviteCode";
+import AcademyDashboard from "./pages/dashboard/AcademyDashboard";
+import StudentDashboard from "./pages/dashboard/StudentDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +32,8 @@ const App = () => (
           <Route path="/onboarding/create-academy" element={<CreateAcademy />} />
           <Route path="/onboarding/student" element={<StudentRegistration />} />
           <Route path="/onboarding/invite" element={<InviteCode />} />
+          <Route path="/dashboard/academy" element={<AcademyDashboard />} />
+          <Route path="/dashboard/student" element={<StudentDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
