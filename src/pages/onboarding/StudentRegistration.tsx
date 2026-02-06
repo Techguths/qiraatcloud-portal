@@ -99,7 +99,7 @@ const StudentRegistration = () => {
     });
 
     setIsSubmitting(false);
-    navigate("/");
+    navigate("/dashboard/student");
   };
 
   const canProceed = () => {

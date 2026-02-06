@@ -151,7 +151,6 @@ const CreateAcademy = () => {
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     toast({
@@ -160,7 +159,7 @@ const CreateAcademy = () => {
     });
 
     setIsLoading(false);
-    navigate("/");
+    navigate("/dashboard/academy");
   };
 
   return (
