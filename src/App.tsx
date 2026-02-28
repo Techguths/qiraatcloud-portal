@@ -14,6 +14,7 @@ import InviteCode from "./pages/onboarding/InviteCode";
 import AcademyDashboard from "./pages/dashboard/AcademyDashboard";
 import StudentDashboard from "./pages/dashboard/StudentDashboard";
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
+import TutorDashboard from "./pages/dashboard/TutorDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/dashboard/academy" element={<AcademyDashboard />} />
           <Route path="/dashboard/student" element={<StudentDashboard />} />
           <Route path="/dashboard/admin" element={<AdminDashboard />} />
+          <Route path="/dashboard/tutor" element={<TutorDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
