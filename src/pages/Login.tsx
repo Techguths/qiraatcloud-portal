@@ -50,8 +50,10 @@ const Login = () => {
     
     setIsLoading(false);
     // Redirect based on role - for demo, use email to determine role
-    if (loginEmail.toLowerCase().includes("admin")) {
+    if (loginEmail.toLowerCase().includes("platform-admin") || loginEmail.toLowerCase().includes("superadmin")) {
       navigate("/dashboard/admin");
+    } else if (loginEmail.toLowerCase().includes("academy-admin")) {
+      navigate("/dashboard/academy-admin");
     } else if (loginEmail.toLowerCase().includes("tutor")) {
       navigate("/dashboard/tutor");
     } else if (loginEmail.toLowerCase().includes("student")) {
