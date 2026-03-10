@@ -16,6 +16,10 @@ import StudentDashboard from "./pages/dashboard/StudentDashboard";
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
 import TutorDashboard from "./pages/dashboard/TutorDashboard";
 import AcademyAdminDashboard from "./pages/dashboard/AcademyAdminDashboard";
+import HelpCenter from "./pages/HelpCenter";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import CookiePolicy from "./pages/CookiePolicy";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
