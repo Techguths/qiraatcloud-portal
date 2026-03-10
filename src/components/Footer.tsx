@@ -16,15 +16,15 @@ const Footer = () => {
       { label: "Press Kit", href: "#", isRoute: false },
     ],
     support: [
-      { label: "Help Center", href: "#", isRoute: false },
+      { label: "Help Center", href: "/help-center", isRoute: true },
       { label: "Documentation", href: "#", isRoute: false },
       { label: "Contact Us", href: "#", isRoute: false },
       { label: "Status", href: "#", isRoute: false },
     ],
     legal: [
-      { label: "Privacy Policy", href: "#", isRoute: false },
-      { label: "Terms of Service", href: "#", isRoute: false },
-      { label: "Cookie Policy", href: "#", isRoute: false },
+      { label: "Privacy Policy", href: "/privacy-policy", isRoute: true },
+      { label: "Terms of Service", href: "/terms-of-service", isRoute: true },
+      { label: "Cookie Policy", href: "/cookie-policy", isRoute: true },
     ],
   };
 
