@@ -1,7 +1,25 @@
 import { useState } from "react";
-import { Check, PenLine } from "lucide-react";
+import { Check, PenLine, Rocket, Users, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import ReviewFormModal from "./ReviewFormModal";
+import { toast } from "sonner";
 
 const reasons = [
   "Built specifically for Qur'an teaching",
@@ -14,6 +32,30 @@ const reasons = [
 
 const WhyChooseSection = () => {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [waitlistForm, setWaitlistForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    role: "",
+  });
+
+  const handleWaitlistSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!waitlistForm.name || !waitlistForm.email || !waitlistForm.role) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+    setIsSubmitted(true);
+    toast.success("You've been added to the waitlist!");
+  };
+
+  const resetWaitlist = () => {
+    setIsWaitlistOpen(false);
+    setIsSubmitted(false);
+    setWaitlistForm({ name: "", email: "", phone: "", role: "" });
+  };
 
   return (
     <section className="py-20 lg:py-32 relative overflow-hidden">
@@ -49,15 +91,26 @@ const WhyChooseSection = () => {
               ))}
             </div>
 
-            {/* Write Review Button */}
-            <Button 
-              size="lg"
-              className="bg-accent text-accent-foreground hover:bg-accent/90"
-              onClick={() => setIsReviewModalOpen(true)}
-            >
-              <PenLine className="w-5 h-5 mr-2" />
-              Write a Review
-            </Button>
+            {/* Action Buttons */}
+            <div className="flex flex-wrap gap-4">
+              <Button
+                size="lg"
+                className="bg-accent text-accent-foreground hover:bg-accent/90"
+                onClick={() => setIsWaitlistOpen(true)}
+              >
+                <Rocket className="w-5 h-5 mr-2" />
+                Join the Waitlist
+              </Button>
+              <Button 
+                size="lg"
+                variant="outline"
+                className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
+                onClick={() => setIsReviewModalOpen(true)}
+              >
+                <PenLine className="w-5 h-5 mr-2" />
+                Write a Review
+              </Button>
+            </div>
           </div>
 
           {/* Right Content - Testimonial */}
@@ -92,6 +145,94 @@ const WhyChooseSection = () => {
           </div>
         </div>
       </div>
+
+      {/* Waitlist Dialog */}
+      <Dialog open={isWaitlistOpen} onOpenChange={resetWaitlist}>
+        <DialogContent className="sm:max-w-md">
+          {!isSubmitted ? (
+            <>
+              <DialogHeader>
+                <div className="mx-auto w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+                  <Users className="w-7 h-7 text-primary" />
+                </div>
+                <DialogTitle className="text-center text-xl">Join the QiraatCloud Waitlist</DialogTitle>
+                <DialogDescription className="text-center">
+                  Be the first to know when we launch. Get early access and exclusive updates.
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleWaitlistSubmit} className="space-y-4 mt-2">
+                <div className="space-y-2">
+                  <Label htmlFor="waitlist-name">Full Name <span className="text-destructive">*</span></Label>
+                  <Input
+                    id="waitlist-name"
+                    placeholder="Enter your full name"
+                    value={waitlistForm.name}
+                    onChange={(e) => setWaitlistForm({ ...waitlistForm, name: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="waitlist-email">Email Address <span className="text-destructive">*</span></Label>
+                  <Input
+                    id="waitlist-email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={waitlistForm.email}
+                    onChange={(e) => setWaitlistForm({ ...waitlistForm, email: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="waitlist-phone">Phone Number</Label>
+                  <Input
+                    id="waitlist-phone"
+                    type="tel"
+                    placeholder="+1 (555) 000-0000"
+                    value={waitlistForm.phone}
+                    onChange={(e) => setWaitlistForm({ ...waitlistForm, phone: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="waitlist-role">I am a... <span className="text-destructive">*</span></Label>
+                  <Select
+                    value={waitlistForm.role}
+                    onValueChange={(value) => setWaitlistForm({ ...waitlistForm, role: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select your role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="student">Student</SelectItem>
+                      <SelectItem value="parent">Parent</SelectItem>
+                      <SelectItem value="tutor">Tutor</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <DialogFooter className="pt-2">
+                  <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+                    <Rocket className="w-4 h-4 mr-2" />
+                    Join Waitlist
+                  </Button>
+                </DialogFooter>
+              </form>
+            </>
+          ) : (
+            <div className="flex flex-col items-center py-6 text-center space-y-4">
+              <div className="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center">
+                <CheckCircle2 className="w-9 h-9 text-accent" />
+              </div>
+              <DialogTitle className="text-xl">You're on the list! 🎉</DialogTitle>
+              <DialogDescription>
+                Thanks, <span className="font-semibold text-foreground">{waitlistForm.name}</span>! 
+                We'll notify you at <span className="font-semibold text-foreground">{waitlistForm.email}</span> when QiraatCloud is ready.
+              </DialogDescription>
+              <Button onClick={resetWaitlist} variant="outline" className="mt-2">
+                Close
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Review Form Modal */}
       <ReviewFormModal 
