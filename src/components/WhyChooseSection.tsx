@@ -218,8 +218,8 @@ const WhyChooseSection = () => {
             </>
           ) : (
             <div className="flex flex-col items-center py-6 text-center space-y-4">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle2 className="w-9 h-9 text-green-600" />
+              <div className="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center">
+                <CheckCircle2 className="w-9 h-9 text-accent" />
               </div>
               <DialogTitle className="text-xl">You're on the list! 🎉</DialogTitle>
               <DialogDescription>
