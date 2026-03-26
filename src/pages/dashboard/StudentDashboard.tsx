@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { BookOpen, Home, Calendar, TrendingUp, User, LogOut, Bell, Search, Menu, X, GraduationCap } from "lucide-react";
+import { BookOpen, Home, Calendar, TrendingUp, User, LogOut, Bell, Search, Menu, X, GraduationCap, Library } from "lucide-react";
 import StudentOverview from "./student/StudentOverview";
 import StudentSchedule from "./student/StudentSchedule";
 import StudentProgress from "./student/StudentProgress";
 import StudentProfile from "./student/StudentProfile";
+import StudentClasses from "./student/StudentClasses";
+import StudentClassDetail from "./student/StudentClassDetail";
 
 const sidebarItems = [
   { id: "overview", label: "Home", icon: Home },
