@@ -10,6 +10,7 @@ import StudentClassDetail from "./student/StudentClassDetail";
 
 const sidebarItems = [
   { id: "overview", label: "Home", icon: Home },
+  { id: "classes", label: "Classes", icon: Library },
   { id: "schedule", label: "My Schedule", icon: Calendar },
   { id: "progress", label: "Progress", icon: TrendingUp },
   { id: "profile", label: "Profile", icon: User },
