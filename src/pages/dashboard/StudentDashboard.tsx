@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { BookOpen, Home, Calendar, TrendingUp, User, LogOut, Bell, Search, Menu, X, GraduationCap } from "lucide-react";
+import { BookOpen, Home, Calendar, TrendingUp, User, LogOut, Bell, Search, Menu, X, GraduationCap, Library } from "lucide-react";
 import StudentOverview from "./student/StudentOverview";
 import StudentSchedule from "./student/StudentSchedule";
 import StudentProgress from "./student/StudentProgress";
 import StudentProfile from "./student/StudentProfile";
+import StudentClasses from "./student/StudentClasses";
+import StudentClassDetail from "./student/StudentClassDetail";
 
 const sidebarItems = [
   { id: "overview", label: "Home", icon: Home },
+  { id: "classes", label: "Classes", icon: Library },
   { id: "schedule", label: "My Schedule", icon: Calendar },
   { id: "progress", label: "Progress", icon: TrendingUp },
   { id: "profile", label: "Profile", icon: User },
@@ -54,11 +57,26 @@ const mockStudentData = {
 const StudentDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
+
+  const handleViewClass = (classId: string) => {
+    setSelectedClassId(classId);
+  };
+
+  const handleBackToClasses = () => {
+    setSelectedClassId(null);
+  };
 
   const renderContent = () => {
+    if (activeTab === "classes" && selectedClassId) {
+      return <StudentClassDetail classId={selectedClassId} onBack={handleBackToClasses} />;
+    }
+
     switch (activeTab) {
       case "overview":
         return <StudentOverview student={mockStudentData} />;
+      case "classes":
+        return <StudentClasses onViewClass={handleViewClass} />;
       case "schedule":
         return <StudentSchedule />;
       case "progress":
@@ -103,7 +121,7 @@ const StudentDashboard = () => {
           {sidebarItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => { setActiveTab(item.id); setSelectedClassId(null); }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                 activeTab === item.id
                   ? "bg-primary text-primary-foreground"
@@ -147,7 +165,7 @@ const StudentDashboard = () => {
               {sidebarItems.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => { setActiveTab(item.id); setIsMobileSidebarOpen(false); }}
+                  onClick={() => { setActiveTab(item.id); setSelectedClassId(null); setIsMobileSidebarOpen(false); }}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                     activeTab === item.id
                       ? "bg-primary text-primary-foreground"
