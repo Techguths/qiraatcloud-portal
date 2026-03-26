@@ -57,11 +57,26 @@ const mockStudentData = {
 const StudentDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
+
+  const handleViewClass = (classId: string) => {
+    setSelectedClassId(classId);
+  };
+
+  const handleBackToClasses = () => {
+    setSelectedClassId(null);
+  };
 
   const renderContent = () => {
+    if (activeTab === "classes" && selectedClassId) {
+      return <StudentClassDetail classId={selectedClassId} onBack={handleBackToClasses} />;
+    }
+
     switch (activeTab) {
       case "overview":
         return <StudentOverview student={mockStudentData} />;
+      case "classes":
+        return <StudentClasses onViewClass={handleViewClass} />;
       case "schedule":
         return <StudentSchedule />;
       case "progress":
