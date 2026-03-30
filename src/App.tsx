@@ -20,6 +20,8 @@ import HelpCenter from "./pages/HelpCenter";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import CookiePolicy from "./pages/CookiePolicy";
+import Mushaf from "./pages/Mushaf";
+import MushafReader from "./pages/MushafReader";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
