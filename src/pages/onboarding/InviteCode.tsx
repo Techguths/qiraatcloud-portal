@@ -298,36 +298,49 @@ const InviteCode = () => {
 
           <div className="relative z-10 max-w-md text-center">
             <div className="w-24 h-24 bg-primary-foreground/10 backdrop-blur rounded-3xl flex items-center justify-center mx-auto mb-8 border border-primary-foreground/20">
-              <Key className="w-12 h-12 text-primary-foreground" />
+              <Building2 className="w-12 h-12 text-primary-foreground" />
             </div>
             <h2 className="font-display text-3xl font-bold text-primary-foreground mb-6">
               Join Your Academy
             </h2>
             <p className="text-primary-foreground/80 text-lg mb-8">
-              Your academy has invited you to join QiraatCloud. Enter your unique invite code to get started with your personalized learning journey.
+              Your academy has invited you to join their platform. Enter the invite code shared by your academy to access your personalized dashboard.
             </p>
 
-            {/* Feature list */}
-            <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-6 border border-primary-foreground/20 text-left space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-primary-foreground/20 flex items-center justify-center shrink-0">
-                  <GraduationCap className="w-4 h-4 text-primary-foreground" />
+            {/* Role cards */}
+            <div className="space-y-3 mb-6">
+              <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-xl p-4 border border-primary-foreground/20 flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-primary-foreground/20 flex items-center justify-center shrink-0">
+                  <GraduationCap className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <p className="text-primary-foreground text-sm">Personalized learning dashboard</p>
+                <div className="text-left">
+                  <p className="text-primary-foreground font-medium text-sm">Students</p>
+                  <p className="text-primary-foreground/70 text-xs">Access classes, track progress & join live sessions</p>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-primary-foreground/20 flex items-center justify-center shrink-0">
-                  <BookOpen className="w-4 h-4 text-primary-foreground" />
+              <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-xl p-4 border border-primary-foreground/20 flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-primary-foreground/20 flex items-center justify-center shrink-0">
+                  <BookOpen className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <p className="text-primary-foreground text-sm">Access to live & recorded sessions</p>
+                <div className="text-left">
+                  <p className="text-primary-foreground font-medium text-sm">Tutors</p>
+                  <p className="text-primary-foreground/70 text-xs">Manage classes, schedule sessions & track students</p>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-primary-foreground/20 flex items-center justify-center shrink-0">
-                  <Shield className="w-4 h-4 text-primary-foreground" />
+              <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-xl p-4 border border-primary-foreground/20 flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-primary-foreground/20 flex items-center justify-center shrink-0">
+                  <Shield className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <p className="text-primary-foreground text-sm">Secure, role-based access control</p>
+                <div className="text-left">
+                  <p className="text-primary-foreground font-medium text-sm">Administrators</p>
+                  <p className="text-primary-foreground/70 text-xs">Full academy oversight, analytics & team management</p>
+                </div>
               </div>
             </div>
+
+            <p className="text-primary-foreground/60 text-xs text-center">
+              Your role is determined by the invite code provided by your academy
+            </p>
           </div>
         </div>
       </div>
