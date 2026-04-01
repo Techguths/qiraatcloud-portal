@@ -213,48 +213,123 @@ const InviteCode = () => {
   // ========== STEP 0: Code Entry ==========
   if (currentStep === 0) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
-        <header className="px-4 py-6 sm:px-6 lg:px-8">
-          <div className="max-w-md mx-auto">
-            <Link to="/get-started" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-              <ArrowLeft className="w-4 h-4" /> Back
+      <div className="min-h-screen bg-background flex">
+        {/* Left Side - Form */}
+        <div className="flex-1 flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-20 xl:px-24">
+          <div className="mx-auto w-full max-w-sm">
+            {/* Back Link */}
+            <Link
+              to="/get-started"
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back
             </Link>
-          </div>
-        </header>
-        <main className="flex-1 flex items-center justify-center px-4 py-12">
-          <div className="max-w-md w-full">
-            <div className="flex justify-center mb-8">
-              <div className="w-20 h-20 bg-gradient-hero rounded-2xl flex items-center justify-center">
-                <Key className="w-10 h-10 text-primary-foreground" />
+
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-2 mb-8">
+              <div className="w-10 h-10 bg-gradient-hero rounded-xl flex items-center justify-center">
+                <span className="text-primary-foreground font-display font-bold text-xl">Q</span>
               </div>
-            </div>
-            <div className="text-center mb-8">
-              <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-3">Enter your invite code</h1>
-              <p className="text-muted-foreground">You should have received an invite code from your academy administrator or teacher.</p>
-            </div>
+              <span className="font-display font-semibold text-xl text-foreground">
+                Qiraat<span className="text-primary">Cloud</span>
+              </span>
+            </Link>
+
             <form onSubmit={handleVerify} className="space-y-6">
               <div>
-                <label htmlFor="invite-code" className="block text-sm font-medium text-foreground mb-2">Invite Code</label>
-                <Input
-                  id="invite-code" type="text" placeholder="e.g., STU123"
-                  value={inviteCode} onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
-                  className="text-center text-lg tracking-widest font-mono" maxLength={12}
-                />
-                <p className="text-xs text-muted-foreground mt-2 text-center">Try: STU123 (student), TUT456 (tutor), ADM789 (admin)</p>
+                <h1 className="font-display text-2xl font-bold text-foreground mb-2">
+                  Enter your invite code
+                </h1>
+                <p className="text-muted-foreground">
+                  You should have received an invite code from your academy administrator or teacher.
+                </p>
               </div>
+
+              <div>
+                <label htmlFor="invite-code" className="block text-sm font-medium text-foreground mb-2">
+                  Invite Code
+                </label>
+                <Input
+                  id="invite-code"
+                  type="text"
+                  placeholder="e.g., STU123"
+                  value={inviteCode}
+                  onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                  className="text-center text-lg tracking-widest font-mono"
+                  maxLength={12}
+                />
+                <p className="text-xs text-muted-foreground mt-2 text-center">
+                  Try: STU123 (student), TUT456 (tutor), ADM789 (admin)
+                </p>
+              </div>
+
               <Button type="submit" className="w-full bg-gradient-hero hover:opacity-90" size="lg" disabled={isVerifying}>
-                {isVerifying ? (<><Loader2 className="w-4 h-4 mr-2 animate-spin" />Verifying...</>) : "Verify Code"}
+                {isVerifying ? (
+                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Verifying...</>
+                ) : (
+                  "Verify Code"
+                )}
               </Button>
             </form>
-            <div className="mt-8 text-center">
-              <p className="text-sm text-muted-foreground">
-                Don't have an invite code?{" "}
-                <Link to="/onboarding/student" className="text-primary hover:underline">Browse academies</Link>{" "}or{" "}
-                <Link to="/onboarding/create-academy" className="text-primary hover:underline">create your own</Link>
-              </p>
+
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-background text-muted-foreground">or</span>
+              </div>
+            </div>
+
+            <p className="text-sm text-muted-foreground text-center">
+              Don't have an invite code?{" "}
+              <Link to="/onboarding/student" className="text-primary hover:underline font-medium">Browse academies</Link>{" "}or{" "}
+              <Link to="/onboarding/create-academy" className="text-primary hover:underline font-medium">create your own</Link>
+            </p>
+          </div>
+        </div>
+
+        {/* Right Side - Decorative */}
+        <div className="hidden lg:flex flex-1 bg-gradient-hero items-center justify-center p-12 relative overflow-hidden">
+          <div className="absolute inset-0 geometric-pattern opacity-10" />
+          <div className="absolute top-1/4 -right-32 w-96 h-96 bg-accent/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 -left-32 w-96 h-96 bg-primary-foreground/10 rounded-full blur-3xl" />
+
+          <div className="relative z-10 max-w-md text-center">
+            <div className="w-24 h-24 bg-primary-foreground/10 backdrop-blur rounded-3xl flex items-center justify-center mx-auto mb-8 border border-primary-foreground/20">
+              <Key className="w-12 h-12 text-primary-foreground" />
+            </div>
+            <h2 className="font-display text-3xl font-bold text-primary-foreground mb-6">
+              Join Your Academy
+            </h2>
+            <p className="text-primary-foreground/80 text-lg mb-8">
+              Your academy has invited you to join QiraatCloud. Enter your unique invite code to get started with your personalized learning journey.
+            </p>
+
+            {/* Feature list */}
+            <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-6 border border-primary-foreground/20 text-left space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-primary-foreground/20 flex items-center justify-center shrink-0">
+                  <GraduationCap className="w-4 h-4 text-primary-foreground" />
+                </div>
+                <p className="text-primary-foreground text-sm">Personalized learning dashboard</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-primary-foreground/20 flex items-center justify-center shrink-0">
+                  <BookOpen className="w-4 h-4 text-primary-foreground" />
+                </div>
+                <p className="text-primary-foreground text-sm">Access to live & recorded sessions</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-primary-foreground/20 flex items-center justify-center shrink-0">
+                  <Shield className="w-4 h-4 text-primary-foreground" />
+                </div>
+                <p className="text-primary-foreground text-sm">Secure, role-based access control</p>
+              </div>
             </div>
           </div>
-        </main>
+        </div>
       </div>
     );
   }
