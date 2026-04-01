@@ -350,21 +350,19 @@ const InviteCode = () => {
   // ========== STEP 1: Academy Preview ==========
   if (currentStep === 1 && inviteData) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
-        <header className="px-4 py-6 sm:px-6 lg:px-8 border-b border-border">
-          <div className="max-w-2xl mx-auto flex items-center justify-between">
-            <button onClick={() => { setCurrentStep(0); setInviteData(null); }} className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-              <ArrowLeft className="w-4 h-4" /> Back
+      <div className="min-h-screen bg-background flex">
+        {/* Left Side - Academy Details */}
+        <div className="flex-1 flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-20 xl:px-24">
+          <div className="mx-auto w-full max-w-sm">
+            {/* Back Link */}
+            <button
+              onClick={() => { setCurrentStep(0); setInviteData(null); }}
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back
             </button>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-hero rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-display font-bold text-sm">Q</span>
-              </div>
-            </div>
-          </div>
-        </header>
-        <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8">
-          <div className="max-w-2xl mx-auto">
+
             {/* Success banner */}
             <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 mb-8 flex items-center gap-3">
               <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center shrink-0">
@@ -372,39 +370,43 @@ const InviteCode = () => {
               </div>
               <div>
                 <p className="font-medium text-foreground">Invite code verified!</p>
-                <p className="text-sm text-muted-foreground">You've been invited by <span className="font-medium text-foreground">{inviteData.invitedBy}</span></p>
+                <p className="text-sm text-muted-foreground">Invited by <span className="font-medium text-foreground">{inviteData.invitedBy}</span></p>
               </div>
             </div>
 
-            {/* Academy Card */}
-            <div className="bg-card border border-border rounded-2xl overflow-hidden mb-6">
-              <div className="bg-gradient-hero p-6 text-center">
-                <div className="w-20 h-20 bg-background/20 backdrop-blur rounded-2xl flex items-center justify-center mx-auto mb-4 text-4xl">
+            {/* Academy Info */}
+            <div className="mb-6">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-3xl shrink-0">
                   {inviteData.academy.logo}
                 </div>
-                <h2 className="font-display text-xl font-bold text-primary-foreground">{inviteData.academy.name}</h2>
-                <p className="text-primary-foreground/80 text-sm flex items-center justify-center gap-1 mt-1">
-                  <MapPin className="w-3 h-3" /> {inviteData.academy.location}
-                </p>
-              </div>
-              <div className="p-6">
-                <p className="text-muted-foreground text-sm mb-4">{inviteData.academy.description}</p>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div className="bg-muted/50 rounded-lg p-3 text-center">
-                    <p className="text-2xl font-bold text-foreground">{inviteData.academy.students}</p>
-                    <p className="text-xs text-muted-foreground">Students</p>
-                  </div>
-                  <div className="bg-muted/50 rounded-lg p-3 text-center">
-                    <p className="text-2xl font-bold text-foreground">{inviteData.academy.tutors}</p>
-                    <p className="text-xs text-muted-foreground">Tutors</p>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {inviteData.academy.subjects.map((s) => (
-                    <span key={s} className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">{s}</span>
-                  ))}
+                <div>
+                  <h1 className="font-display text-xl font-bold text-foreground">{inviteData.academy.name}</h1>
+                  <p className="text-muted-foreground text-sm flex items-center gap-1">
+                    <MapPin className="w-3 h-3" /> {inviteData.academy.location}
+                  </p>
                 </div>
               </div>
+              <p className="text-muted-foreground text-sm">{inviteData.academy.description}</p>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              <div className="bg-muted/50 rounded-xl p-4 text-center">
+                <p className="text-2xl font-bold text-foreground">{inviteData.academy.students}</p>
+                <p className="text-xs text-muted-foreground">Students</p>
+              </div>
+              <div className="bg-muted/50 rounded-xl p-4 text-center">
+                <p className="text-2xl font-bold text-foreground">{inviteData.academy.tutors}</p>
+                <p className="text-xs text-muted-foreground">Tutors</p>
+              </div>
+            </div>
+
+            {/* Subjects */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              {inviteData.academy.subjects.map((s) => (
+                <span key={s} className="px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-medium">{s}</span>
+              ))}
             </div>
 
             {/* Role Badge */}
@@ -413,7 +415,7 @@ const InviteCode = () => {
                 {getRoleIcon(inviteData.role)}
               </div>
               <div className="flex-1">
-                <p className="text-sm text-muted-foreground">Your assigned role</p>
+                <p className="text-xs text-muted-foreground">Your assigned role</p>
                 <p className="font-display font-semibold text-foreground capitalize">{inviteData.role}</p>
               </div>
               <span className="text-xs text-muted-foreground">Expires {inviteData.expiresAt}</span>
@@ -423,7 +425,41 @@ const InviteCode = () => {
               Continue as {inviteData.role} <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </div>
-        </main>
+        </div>
+
+        {/* Right Side - Decorative */}
+        <div className="hidden lg:flex flex-1 bg-gradient-hero items-center justify-center p-12 relative overflow-hidden">
+          <div className="absolute inset-0 geometric-pattern opacity-10" />
+          <div className="absolute top-1/4 -right-32 w-96 h-96 bg-accent/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 -left-32 w-96 h-96 bg-primary-foreground/10 rounded-full blur-3xl" />
+
+          <div className="relative z-10 max-w-md text-center">
+            <div className="w-24 h-24 bg-primary-foreground/10 backdrop-blur rounded-3xl flex items-center justify-center mx-auto mb-8 border border-primary-foreground/20 text-5xl">
+              {inviteData.academy.logo}
+            </div>
+            <h2 className="font-display text-3xl font-bold text-primary-foreground mb-4">
+              {inviteData.academy.name}
+            </h2>
+            <p className="text-primary-foreground/80 text-lg mb-8">
+              You're about to join as a <span className="font-semibold capitalize">{inviteData.role}</span>. Review the academy details and continue to set up your profile.
+            </p>
+
+            <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-6 border border-primary-foreground/20">
+              <p className="text-primary-foreground/90 italic mb-4">
+                "We're excited to have you join our community of learners and educators dedicated to Qur'anic excellence."
+              </p>
+              <div className="flex items-center justify-center gap-3">
+                <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
+                  <span className="font-semibold text-accent-foreground">{inviteData.invitedBy.charAt(0)}</span>
+                </div>
+                <div className="text-left">
+                  <div className="font-medium text-primary-foreground">{inviteData.invitedBy}</div>
+                  <div className="text-sm text-primary-foreground/70">{inviteData.academy.name}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
