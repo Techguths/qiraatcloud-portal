@@ -25,6 +25,7 @@ const TutorDashboard = () => {
       case "classes": return <TutorClasses />;
       case "students": return <TutorStudents />;
       case "schedule": return <TutorSchedule />;
+      case "profile": return <TutorProfile />;
       default: return <TutorOverview />;
     }
   };
