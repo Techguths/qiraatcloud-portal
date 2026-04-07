@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { BookOpen, Users, Calendar, Layout, Settings, LogOut, Bell, Search, Menu, X, GraduationCap } from "lucide-react";
+import { BookOpen, Users, Calendar, Layout, Settings, LogOut, Bell, Search, Menu, X, GraduationCap, UserCircle } from "lucide-react";
 import TutorOverview from "./tutor/TutorOverview";
 import TutorStudents from "./tutor/TutorStudents";
 import TutorClasses from "./tutor/TutorClasses";
 import TutorSchedule from "./tutor/TutorSchedule";
+import TutorProfile from "./tutor/TutorProfile";
 
 const sidebarItems = [
   { id: "overview", label: "Overview", icon: Layout },
   { id: "classes", label: "My Classes", icon: BookOpen },
   { id: "students", label: "Student Roster", icon: Users },
   { id: "schedule", label: "Schedule", icon: Calendar },
+  { id: "profile", label: "Profile & Settings", icon: UserCircle },
 ];
 
 const TutorDashboard = () => {
@@ -23,6 +25,7 @@ const TutorDashboard = () => {
       case "classes": return <TutorClasses />;
       case "students": return <TutorStudents />;
       case "schedule": return <TutorSchedule />;
+      case "profile": return <TutorProfile />;
       default: return <TutorOverview />;
     }
   };
