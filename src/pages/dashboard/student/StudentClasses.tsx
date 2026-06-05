@@ -1,12 +1,49 @@
 import { useState } from "react";
-import { Users, Clock, BookOpen, Star, Search, Filter, ArrowRight, Calendar, User } from "lucide-react";
+import { Users, Clock, BookOpen, Search, ArrowRight, Calendar, Video, Radio, CalendarClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "@/hooks/use-toast";
 
 interface StudentClassesProps {
   onViewClass: (classId: string) => void;
 }
+
+const upcomingSessions = [
+  {
+    id: "s1",
+    classId: "1",
+    title: "Advanced Hifz Circle",
+    tutor: "Ustadh Bilal",
+    topic: "Surah Al-Isra — Page 283",
+    time: "Today, 2:00 PM",
+    startsIn: "Live now",
+    status: "live" as const,
+    duration: "45 min",
+  },
+  {
+    id: "s2",
+    classId: "3",
+    title: "1-on-1 Hifz Session",
+    tutor: "Ustadh Bilal",
+    topic: "Daily Revision",
+    time: "Tomorrow, 3:00 PM",
+    startsIn: "In 22 hrs",
+    status: "scheduled" as const,
+    duration: "30 min",
+  },
+  {
+    id: "s3",
+    classId: "2",
+    title: "Tajweed Masterclass",
+    tutor: "Ustadha Fatima",
+    topic: "Madd Rules Deep Dive",
+    time: "Saturday, 10:00 AM",
+    startsIn: "In 3 days",
+    status: "scheduled" as const,
+    duration: "60 min",
+  },
+];
 
 const myClasses = [
   {
@@ -121,13 +158,86 @@ const StudentClasses = ({ onViewClass }: StudentClassesProps) => {
       c.tutor.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleJoin = (title: string) => {
+    toast({
+      title: "Joining session…",
+      description: `Connecting you to ${title}.`,
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div>
         <h2 className="font-display text-2xl font-bold text-foreground">My Classes</h2>
         <p className="text-sm text-muted-foreground mt-1">
-          Manage your enrolled classes and discover new ones
+          Join live sessions, track your schedule, and discover new classes
         </p>
+      </div>
+
+      {/* Upcoming / Live Sessions */}
+      <div className="bg-card rounded-2xl border border-border overflow-hidden">
+        <div className="flex items-center justify-between p-5 border-b border-border">
+          <div className="flex items-center gap-2">
+            <CalendarClock className="w-4 h-4 text-primary" />
+            <h3 className="font-display font-semibold text-foreground text-sm">Upcoming Sessions</h3>
+          </div>
+          <Badge variant="outline" className="text-[10px]">{upcomingSessions.length} scheduled</Badge>
+        </div>
+        <div className="divide-y divide-border">
+          {upcomingSessions.map((s) => (
+            <div
+              key={s.id}
+              className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-secondary/20 transition-colors"
+            >
+              <div className="flex items-start gap-3 min-w-0">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                  s.status === "live" ? "bg-destructive/10" : "bg-primary/10"
+                }`}>
+                  {s.status === "live" ? (
+                    <Radio className="w-5 h-5 text-destructive animate-pulse" />
+                  ) : (
+                    <Calendar className="w-5 h-5 text-primary" />
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="text-sm font-semibold text-foreground truncate">{s.title}</p>
+                    {s.status === "live" && (
+                      <Badge className="bg-destructive text-destructive-foreground text-[10px] h-5">LIVE</Badge>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground truncate">{s.topic} • {s.tutor}</p>
+                  <div className="flex items-center gap-3 mt-1 text-[11px] text-muted-foreground">
+                    <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{s.time}</span>
+                    <span>•</span>
+                    <span>{s.duration}</span>
+                    <span>•</span>
+                    <span className={s.status === "live" ? "text-destructive font-medium" : ""}>{s.startsIn}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 sm:flex-shrink-0">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full h-8 text-xs"
+                  onClick={() => onViewClass(s.classId)}
+                >
+                  Details
+                </Button>
+                <Button
+                  size="sm"
+                  className="rounded-full h-8 text-xs gap-1.5"
+                  disabled={s.status !== "live"}
+                  onClick={() => handleJoin(s.title)}
+                >
+                  <Video className="w-3.5 h-3.5" />
+                  {s.status === "live" ? "Join Now" : "Join"}
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Tabs */}
@@ -166,8 +276,7 @@ const StudentClasses = ({ onViewClass }: StudentClassesProps) => {
         {filtered.map((cls) => (
           <div
             key={cls.id}
-            className="bg-card rounded-xl border border-border overflow-hidden hover:shadow-md transition-shadow group cursor-pointer"
-            onClick={() => onViewClass(cls.id)}
+            className="bg-card rounded-xl border border-border overflow-hidden hover:shadow-md transition-shadow group"
           >
             <div className="p-5 space-y-4">
               <div className="flex items-start justify-between">
@@ -217,7 +326,7 @@ const StudentClasses = ({ onViewClass }: StudentClassesProps) => {
                 </div>
               )}
 
-              <div className="flex items-center justify-between pt-1">
+              <div className="flex items-center justify-between pt-1 gap-2">
                 <Badge variant="outline" className="text-[10px]">
                   {cls.level}
                 </Badge>
@@ -226,9 +335,23 @@ const StudentClasses = ({ onViewClass }: StudentClassesProps) => {
                     Enroll
                   </Button>
                 ) : (
-                  <span className="text-xs text-primary font-medium flex items-center gap-1 group-hover:underline">
-                    View <ArrowRight className="w-3 h-3" />
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7 text-xs rounded-full"
+                      onClick={() => onViewClass(cls.id)}
+                    >
+                      Details <ArrowRight className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="h-7 text-xs rounded-full gap-1"
+                      onClick={() => handleJoin(cls.title)}
+                    >
+                      <Video className="w-3 h-3" /> Join
+                    </Button>
+                  </div>
                 )}
               </div>
             </div>
