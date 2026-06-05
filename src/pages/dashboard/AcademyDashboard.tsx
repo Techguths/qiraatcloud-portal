@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { BookOpen, Users, Calendar, BarChart3, Settings, LogOut, Bell, Search, Menu, X } from "lucide-react";
+import { BookOpen, Users, Calendar, BarChart3, Settings, LogOut, Bell, Search, Menu, X, UserCog } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AcademyOverview from "./academy/AcademyOverview";
 import AcademyStudents from "./academy/AcademyStudents";
+import AcademyStaff from "./academy/AcademyStaff";
 import AcademySchedule from "./academy/AcademySchedule";
 import AcademyAnalytics from "./academy/AcademyAnalytics";
 import AcademySettings from "./academy/AcademySettings";
@@ -11,6 +12,7 @@ import AcademySettings from "./academy/AcademySettings";
 const sidebarItems = [
   { id: "overview", label: "Overview", icon: BarChart3 },
   { id: "students", label: "Students", icon: Users },
+  { id: "staff", label: "Staff", icon: UserCog },
   { id: "schedule", label: "Schedule", icon: Calendar },
   { id: "analytics", label: "Analytics", icon: BarChart3 },
   { id: "settings", label: "Settings", icon: Settings },
@@ -65,6 +67,8 @@ const AcademyDashboard = () => {
         return <AcademyOverview academy={mockAcademyData} />;
       case "students":
         return <AcademyStudents />;
+      case "staff":
+        return <AcademyStaff />;
       case "schedule":
         return <AcademySchedule />;
       case "analytics":
